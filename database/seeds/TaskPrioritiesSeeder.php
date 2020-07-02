@@ -1,9 +1,10 @@
 <?php
 
 use App\ToDoApp\Priorities;
+use App\ToDoApp\Tasks;
 use Illuminate\Database\Seeder;
 
-class PrioritySeeder extends Seeder
+class TaskPrioritiesSeeder extends Seeder
 {
     /**
      * Run the database seeds.
@@ -14,27 +15,32 @@ class PrioritySeeder extends Seeder
     {
         $this->create([
             [
+                'task_id' => 1,
                 'priority_id' => 1,
-                'priority_name' => 'urgent',
             ],
             [
+                'task_id' => 1,
                 'priority_id' => 2,
-                'priority_name' => 'important',
             ],
             [
+                'task_id' => 2,
                 'priority_id' => 3,
-                'priority_name' => 'ignore',
             ],
             [
+                'task_id' => 2,
                 'priority_id' => 4,
-                'priority_name' => 'optional',
             ],
         ]);
     }
     private function create(array $rows)
     {
-        foreach ($rows as $row) {
-            Priorities::create($row);
-        }
+        $priorities = Priorities::all();
+
+// Populate the pivot table
+        Tasks::all()->each(function ($task) use ($priorities) {
+            $task->priorities()->attach(
+                $priorities->random(rand(1, 3))->pluck('priority_id')->toArray()
+            );
+        });
     }
 }
